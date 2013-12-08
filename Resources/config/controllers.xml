@@ -6,6 +6,7 @@
 
     <parameters>
         <parameter key="ecommerce_catalog.product_controller.class">Ecommerce\Bundle\CatalogBundle\Controller\ProductController</parameter>
+        <parameter key="ecommerce_catalog.product_manager.class">Ecommerce\Bundle\CatalogBundle\Product\ProductManager</parameter>
     </parameters>
 
     <services>

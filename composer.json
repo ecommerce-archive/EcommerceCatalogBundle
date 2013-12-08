@@ -14,6 +14,7 @@
         "php": ">=5.3.3",
         "symfony/framework-bundle": "~2.3",
         "doctrine/orm": "~2.2,>=2.2.3",
+        "doctrine/doctrine-bundle": "1.2.*@dev",
         "jackalope/jackalope-doctrine-dbal": "1.0.*",
         "doctrine/phpcr-odm": "1.0.*",
         "doctrine/phpcr-bundle": "1.0.*"

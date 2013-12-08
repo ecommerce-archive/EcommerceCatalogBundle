@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity
+        name="Ecommerce\Bundle\CatalogBundle\Doctrine\Orm\ProductReference"
+        table="ecommerce_product_reference"
+        repository-class="Ecommerce\Bundle\CatalogBundle\Doctrine\Orm\ProductReferenceRepository"
+        change-tracking-policy="DEFERRED_EXPLICIT"
+        >
+
+        <id name="id" type="string" column="id" length="36" />
+
+        <field name="name" type="string" column="name" length="255" nullable="true" />
+    </entity>
+</doctrine-mapping>

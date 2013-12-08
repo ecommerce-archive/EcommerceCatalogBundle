@@ -5,10 +5,17 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="ecommerce_catalog.product_controller.class">Ecommerce\Bundle\CatalogBundle\Controller\ProductController</parameter>
+        <parameter key="ecommerce_catalog.persistence.phpcr.product.repository.class">Ecommerce\Bundle\CatalogBundle\Doctrine\Phpcr\ProductRepository</parameter>
     </parameters>
 
     <services>
+        <service id="ecommerce_catalog.persistence.phpcr.product.repository"
+            class="%ecommerce_catalog.persistence.phpcr.product.repository.class%"
+            factory-service="doctrine_phpcr.odm.document_manager"
+            factory-method="getRepository">
+            <argument>%ecommerce_catalog.persistence.phpcr.product.class%</argument>
+        </service>
+
         <service id="ecommerce_catalog.initializer" class="Doctrine\Bundle\PHPCRBundle\Initializer\GenericInitializer">
             <argument type="collection">
                 <argument>%ecommerce_catalog.persistence.phpcr.product_basepath%</argument>

@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="ecommerce_catalog.persistence.phpcr.reference_listener.class">Ecommerce\Bundle\CatalogBundle\Doctrine\Phpcr\ReferenceListener</parameter>
+        <parameter key="ecommerce_catalog.persistence.orm.reference_listener.class">Ecommerce\Bundle\CatalogBundle\Doctrine\Orm\ReferenceListener</parameter>
+    </parameters>
+
+    <services>
+        <service id="ecommerce_catalog.product_reference.repository"
+            class="Ecommerce\Bundle\CatalogBundle\Doctrine\Orm\ProductReferenceRepository"
+            factory-service="doctrine"
+            factory-method="getRepository">
+            <argument>%ecommerce_catalog.persistence.orm.product_reference.class%</argument>
+        </service>
+
+        <service id="ecommerce_catalog.persistence.phpcr.reference_listener"
+            class="%ecommerce_catalog.persistence.phpcr.reference_listener.class%">
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+            <call method="setEventDispatcher">
+                <argument type="service" id="event_dispatcher"/>
+            </call>
+            <tag name="doctrine_phpcr.event_subscriber" />
+        </service>
+
+        <service id="ecommerce_catalog.persistence.orm.reference_listener"
+            class="%ecommerce_catalog.persistence.orm.reference_listener.class%">
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+            <tag name="doctrine.event_subscriber" />
+        </service>
+    </services>
+</container>

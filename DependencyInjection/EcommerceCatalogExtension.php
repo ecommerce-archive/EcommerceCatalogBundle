@@ -22,20 +22,29 @@ class EcommerceCatalogExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+
+        $loader->load('services.xml');
+
         $loader->load('controllers.xml');
 
-        $useJmsSerializer = true === $config['use_jms_serializer']
-            || ('auto' === $config['use_jms_serializer']
-                && isset($bundles['JMSSerializerBundle'])
-            )
-        ;
+
+        if ($config['property_files'] && is_array($config['property_files'])) {
+            $productPropertiesRegistry = $container->getDefinition('ecommerce_catalog.product_properties_registry');
+            $productPropertiesRegistry->addMethodCall('addPropertyFiles', array($config['property_files']));
+        }
+
 
         if ($config['persistence']['phpcr']['enabled']) {
-            $this->loadPhpcr($config['persistence']['phpcr'], $loader, $container, $useJmsSerializer);
+            $this->loadPhpcr($config['persistence']['phpcr'], $loader, $container);
+
+            // orm depends on phpcr (and it doesn’t make sense to use the orm features without phpcr)
+            if ($config['persistence']['orm']['enabled']) {
+                $this->loadOrm($config['persistence']['orm'], $loader, $container);
+            }
         }
     }
 
-    public function loadPhpcr($config, XmlFileLoader $loader, ContainerBuilder $container, $useJmsSerializer)
+    public function loadPhpcr($config, XmlFileLoader $loader, ContainerBuilder $container)
     {
         $container->setParameter($this->getAlias().'.backend_type_phpcr', true);
         $prefix = $this->getAlias().'.persistence.phpcr';
@@ -58,9 +67,37 @@ class EcommerceCatalogExtension extends Extension
         // load phpcr specific configuration
         $loader->load('persistence-phpcr.xml');
 
-        if ($useJmsSerializer) {
-            // load phpcr specific serializer configuration
-            $loader->load('serializer-phpcr.xml');
+
+//        $productManager = $container->getDefinition('ecommerce_catalog.product_manager');
+//        $productManager->replaceArgument(0, new Reference('doctrine_phpcr'));
+//        $productManager->addMethodCall('setManagerName', array('%ecommerce_catalog.persistence.phpcr.manager_name%'));
+    }
+
+    public function loadOrm($config, XmlFileLoader $loader, ContainerBuilder $container)
+    {
+        $container->setParameter($this->getAlias().'.backend_type_orm', true);
+        $prefix = $this->getAlias().'.persistence.orm';
+
+        $keys = array(
+            'manager_name' => 'manager_name',
+            'product_reference_class' => 'product_reference.class',
+        );
+
+        foreach ($keys as $sourceKey => $targetKey) {
+            if (isset($config[$sourceKey])) {
+                $container->setParameter(
+                    $prefix.'.'.$targetKey,
+                    $config[$sourceKey]
+                );
+            }
         }
+
+        // load phpcr specific configuration
+        $loader->load('persistence-orm.xml');
+
+
+//        $productManager = $container->getDefinition('ecommerce_catalog.product_manager');
+//        $productManager->replaceArgument(0, new Reference('doctrine_phpcr'));
+//        $productManager->addMethodCall('setManagerName', array('%ecommerce_catalog.persistence.phpcr.manager_name%'));
     }
 }

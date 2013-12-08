@@ -4,11 +4,11 @@ namespace Ecommerce\Bundle\CatalogBundle\Doctrine\Orm;
 
 use Doctrine\ORM\EntityRepository;
 
-use Ecommerce\Bundle\CatalogBundle\Doctrine\Phpcr\Product;
+use Ecommerce\Bundle\CatalogBundle\Doctrine\Phpcr\ProductInterface;
 
 class ProductReferenceRepository extends EntityRepository
 {
-    public function create(Product $product)
+    public function create(ProductInterface $product)
     {
         $productReference = new ProductReference($product->getIdentifier(), $product->getName());
 
@@ -18,7 +18,7 @@ class ProductReferenceRepository extends EntityRepository
         return $productReference;
     }
 
-    public function findOrCreate(Product $product)
+    public function findOrCreate(ProductInterface $product)
     {
         $productReference = $this->find($product->getIdentifier());
 
@@ -30,7 +30,7 @@ class ProductReferenceRepository extends EntityRepository
         return $this->create($product);
     }
 
-    public function delete(Product $product)
+    public function delete(ProductInterface $product)
     {
         $productReference = $this->find($product->getIdentifier());
 

@@ -8,28 +8,38 @@ use Jackalope\Node;
 
 use Ecommerce\Bundle\CatalogBundle\Doctrine\Orm\ProductReferenceInterface;
 
-class Product
+class Product implements ProductInterface
 {
-    const STATUS_CREATED = 0;
-    const STATUS_DRAFT = 1;
-    const STATUS_PUBLISHED = 2;
-    const STATUS_UNPUBLISHED = 3;
-
     private $id;
 
     protected $nodename;
 
-    /** @var Generic */
+    /**
+     * @var Generic
+     */
     protected $parent;
 
-    /** @var integer */
     protected $status;
 
-    /** @var Node */
+    /**
+     * @var Node
+     */
     public $node;
 
-    /** @var ProductReferenceInterface */
+    /**
+     * @var ProductReferenceInterface
+     */
     private $productReference;
+
+    /**
+     * @var \DateTime
+     */
+    protected $createdAt;
+
+    /**
+     * @var \DateTime
+     */
+    protected $updatedAt;
 
 
     public function __construct($nodename, $parent)
@@ -57,6 +67,24 @@ class Product
     public function getNodename()
     {
         return $this->nodename;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->nodename;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function isValidProduct()
+    {
+        return $this->hasProperty('name') && strlen($this->getProperty('name'));
     }
 
     /**
@@ -143,7 +171,7 @@ class Product
      * @param $name
      * @return bool
      */
-    public function has($name)
+    public function hasProperty($name)
     {
         return $this->node->hasProperty($name);
     }
@@ -235,5 +263,31 @@ class Product
     public function getProductReference()
     {
         return $this->productReference;
+    }
+
+
+
+    public function setCreatedAt(\DateTime $createdAt = null)
+    {
+        $this->createdAt = $createdAt instanceof \DateTime ? $createdAt : new \DateTime();
+
+        return $this;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    public function setUpdatedAt(\DateTime $updatedAt = null)
+    {
+        $this->updatedAt = $updatedAt instanceof \DateTime ? $updatedAt : new \DateTime();
+
+        return $this;
+    }
+
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 }

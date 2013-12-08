@@ -2,7 +2,7 @@
 
 namespace Ecommerce\Bundle\CatalogBundle\Doctrine\Orm;
 
-use Ecommerce\Bundle\CatalogBundle\Doctrine\Phpcr\Product;
+use Ecommerce\Bundle\CatalogBundle\Doctrine\Phpcr\ProductInterface;
 
 class ProductReference implements ProductReferenceInterface
 {
@@ -12,7 +12,7 @@ class ProductReference implements ProductReferenceInterface
     /** @var string */
     private $name;
 
-    /** @var Product */
+    /** @var ProductInterface */
     private $product;
 
 
@@ -54,10 +54,10 @@ class ProductReference implements ProductReferenceInterface
 
 
     /**
-     * @param Product $product
+     * @param ProductInterface $product
      * @return $this
      */
-    public function setProduct(Product $product)
+    public function setProduct(ProductInterface $product)
     {
         $this->product = $product;
 
@@ -65,7 +65,7 @@ class ProductReference implements ProductReferenceInterface
     }
 
     /**
-     * @return Product
+     * @return ProductInterface
      */
     public function getProduct()
     {
