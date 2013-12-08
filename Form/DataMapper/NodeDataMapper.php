@@ -65,7 +65,7 @@ class NodeDataMapper implements DataMapperInterface
         $node = $data->getNode();
 
         if (!$node instanceof Node) {
-            throw new UnexpectedTypeException($data, 'Jackalope\\Node');
+            throw new UnexpectedTypeException($node, 'Jackalope\\Node');
         }
 
         foreach ($forms as $form) {

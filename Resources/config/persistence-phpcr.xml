@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="ecommerce_catalog.product_controller.class">Ecommerce\Bundle\CatalogBundle\Controller\ProductController</parameter>
+    </parameters>
+
+    <services>
+        <service id="ecommerce_catalog.initializer" class="Doctrine\Bundle\PHPCRBundle\Initializer\GenericInitializer">
+            <argument type="collection">
+                <argument>%ecommerce_catalog.persistence.phpcr.product_basepath%</argument>
+            </argument>
+            <tag name="doctrine_phpcr.initializer" />
+        </service>
+    </services>
+</container>

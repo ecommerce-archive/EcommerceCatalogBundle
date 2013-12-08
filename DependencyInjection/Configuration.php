@@ -18,7 +18,32 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('ecommerce_catalog');
+
+        $treeBuilder->root('ecommerce_catalog')
+            ->children()
+                ->arrayNode('persistence')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('phpcr')
+                            ->addDefaultsIfNotSet()
+                            ->canBeDisabled()
+                            ->children()
+                                ->scalarNode('manager_name')->defaultNull()->end()
+                                ->scalarNode('product_basepath')->defaultValue('/ecommerce/product')->end()
+                                ->scalarNode('product_class')->defaultValue('Ecommerce\Bundle\CatalogBundle\Doctrine\Phpcr\Product')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+
+                ->scalarNode('default_template')->end()
+
+                ->enumNode('use_jms_serializer')
+                    ->values(array(true, false, 'auto'))
+                    ->defaultValue('auto')
+                ->end()
+            ->end()
+        ;
 
 
         return $treeBuilder;
