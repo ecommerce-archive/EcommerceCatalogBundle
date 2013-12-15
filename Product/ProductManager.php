@@ -29,6 +29,9 @@ class ProductManager implements ContainerAwareInterface
     private $productBaseNode;
 
 
+    private $products;
+
+
     /**
      * @var ContainerInterface
      */
@@ -346,7 +349,7 @@ class ProductManager implements ContainerAwareInterface
             return $this->products;
         }
 
-        return $this->products = $this->getProductNode()->getChildren();
+        return $this->products = $this->getProductBaseNode()->getChildren();
     }
 
 
