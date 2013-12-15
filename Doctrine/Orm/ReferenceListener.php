@@ -19,13 +19,6 @@ class ReferenceListener implements EventSubscriber, ContainerAwareInterface
     protected $container;
 
     /**
-     * @var OtherReferenceListener
-     */
-    protected $otherReferenceListener;
-
-    protected $active;
-
-    /**
      * @param ContainerInterface|null $container A ContainerInterface instance or null
      */
     public function setContainer(ContainerInterface $container = null)
@@ -39,7 +32,6 @@ class ReferenceListener implements EventSubscriber, ContainerAwareInterface
      */
     public function __construct()
     {
-        $this->active = false;
     }
 
 
@@ -50,43 +42,10 @@ class ReferenceListener implements EventSubscriber, ContainerAwareInterface
         );
     }
 
-
-    public function isActive()
-    {
-        return $this->active;
-    }
-
-    public function setActive()
-    {
-        $this->active = true;
-    }
-
-    public function setNotActive()
-    {
-        $this->active = false;
-    }
-
-    public function getOtherReferenceListener()
-    {
-        if ($this->otherReferenceListener) {
-            return $this->otherReferenceListener;
-        }
-
-        return $this->otherReferenceListener = $this->container->get('ecommerce_catalog.persistence.phpcr.reference_listener');
-    }
-
-    public function isOtherListenerIsNotActive()
-    {
-        return !$this->getOtherReferenceListener()->isActive();
-    }
-
-
     public function postLoad(LifecycleEventArgs $args)
     {
-        if ($args->getEntity() instanceof ProductReferenceInterface && $this->isOtherListenerIsNotActive()) {
-            $this->setActive();
+        if ($args->getEntity() instanceof ProductReferenceInterface && !$args->getEntity()->getProduct()) {
             $this->addProduct($args->getEntity());
-            $this->setNotActive();
         }
     }
 

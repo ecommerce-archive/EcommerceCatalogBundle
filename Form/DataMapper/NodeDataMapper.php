@@ -5,7 +5,10 @@ namespace Ecommerce\Bundle\CatalogBundle\Form\DataMapper;
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
+use Symfony\Component\PropertyAccess\PropertyAccess;
+
 use Jackalope\Node;
+
 
 /**
  * A data mapper to read/write data to a Jackalope node.
@@ -15,6 +18,22 @@ use Jackalope\Node;
  */
 class NodeDataMapper implements DataMapperInterface
 {
+    /**
+     * @var PropertyAccessorInterface
+     */
+    private $propertyAccessor;
+
+    /**
+     * @return PropertyAccessorInterface
+     */
+    public function getPropertyAccessor()
+    {
+        if (null !== $this->propertyAccessor) {
+            return $this->propertyAccessor;
+        }
+        return $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -41,8 +60,12 @@ class NodeDataMapper implements DataMapperInterface
                 continue;
             }
 
-            if ($config->getOption('translate_field', false) && null !== $propertyPath) {
+            if ($config->getOption('translatable_field', false) && null !== $propertyPath) {
                 $form->setData($data->getTranslatedProperty(strval($propertyPath)));
+            } elseif ('type' === strval($propertyPath)) {
+                $propertyPathAccessor = PropertyAccess::createPropertyAccessor();
+                $form->setData($this->getPropertyAccessor()->getValue($data, $propertyPath));
+//                $form->setData($node->getPropertyValueWithDefault(strval($propertyPath), null));
             } elseif (null !== $propertyPath) {
                 $form->setData($node->getPropertyValueWithDefault(strval($propertyPath), null));
             }
@@ -77,7 +100,7 @@ class NodeDataMapper implements DataMapperInterface
 
                 // @TODO: event with $formData = $form->getData();?
 
-                if ($config->getOption('translate_field', false) && is_array($form->getData())) {
+                if ($config->getOption('translatable_field', false) && is_array($form->getData())) {
                     $data->setTranslatedProperty(strval($propertyPath), $form->getData());
                 } elseif ($config->getOption('image_path', false)) {
                     if ($form->getData() !== null) {

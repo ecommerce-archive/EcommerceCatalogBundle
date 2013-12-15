@@ -8,7 +8,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 
-use Ecommerce\Bundle\CatalogBundle\Doctrine\Orm\ReferenceListener as OtherReferenceListener;
+use Ecommerce\Bundle\CatalogBundle\Event\EcommerceCatalogEvents;
+use Ecommerce\Bundle\CatalogBundle\Event\ProductEvent;
 
 class ReferenceListener implements EventSubscriber
 {
@@ -22,12 +23,6 @@ class ReferenceListener implements EventSubscriber
      */
     private $eventDispatcher;
 
-    /**
-     * @var OtherReferenceListener
-     */
-    protected $otherReferenceListener;
-
-    protected $active;
 
     /**
      * @param ContainerInterface|null $container A ContainerInterface instance or null
@@ -48,7 +43,6 @@ class ReferenceListener implements EventSubscriber
      */
     public function __construct()
     {
-        $this->active = false;
     }
 
 
@@ -56,50 +50,23 @@ class ReferenceListener implements EventSubscriber
     {
         return array(
             'postLoad',
+//            'prePersist',
             'postPersist',
-            'postUpdate',
             'preUpdate',
+            'postUpdate',
             'preRemove',
+            'postRemove',
         );
     }
 
-    public function isActive()
-    {
-        return $this->active;
-    }
-
-    public function setActive()
-    {
-        $this->active = true;
-    }
-
-    public function setNotActive()
-    {
-        $this->active = false;
-    }
-
-    public function getOtherReferenceListener()
-    {
-        if ($this->otherReferenceListener) {
-            return $this->otherReferenceListener;
-        }
-
-        return $this->otherReferenceListener = $this->container->get('ecommerce_catalog.persistence.orm.reference_listener');
-    }
-
-    public function isOtherListenerIsNotActive()
-    {
-        return !$this->getOtherReferenceListener()->isActive();
-    }
 
 
 
     public function postLoad(LifecycleEventArgs $args)
     {
         if ($args->getObject() instanceof ProductInterface) {
-            $this->setActive();
-            $this->addProductReference($args->getObject());
-            $this->setNotActive();
+            $event = new ProductEvent($args->getObject());
+            $this->eventDispatcher->dispatch(EcommerceCatalogEvents::PRODUCT_POST_LOAD, $event);
         }
     }
 
@@ -123,7 +90,7 @@ class ReferenceListener implements EventSubscriber
                 $document->setStatus(ProductInterface::STATUS_DRAFT);
             }
 
-            $this->eventDispatcher->dispatch('ecommmerce_catalog_product_update');
+            $this->eventDispatcher->dispatch(EcommerceCatalogEvents::PRODUCT_PRE_UPDATE);
             $this->container->get('ecommerce_catalog.product_reference.repository')->findOrCreate($document);
         }
     }
@@ -138,7 +105,8 @@ class ReferenceListener implements EventSubscriber
                 $document->setStatus(ProductInterface::STATUS_DRAFT);
             }
 
-            $this->eventDispatcher->dispatch('ecommmerce_catalog_product_update');
+            $event = new ProductEvent($document);
+            $this->eventDispatcher->dispatch(EcommerceCatalogEvents::PRODUCT_POST_UPDATE, $event);
             $this->container->get('ecommerce_catalog.product_reference.repository')->findOrCreate($document);
         }
     }

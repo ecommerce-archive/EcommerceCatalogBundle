@@ -15,6 +15,8 @@ interface ProductInterface
 
     public function getName();
 
+    public function getType();
+
     public function all();
 
     public function getProperty($name);

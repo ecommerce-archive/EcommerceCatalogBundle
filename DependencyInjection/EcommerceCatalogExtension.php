@@ -34,6 +34,12 @@ class EcommerceCatalogExtension extends Extension
         }
 
 
+        if ($config['type_files'] && is_array($config['type_files'])) {
+            $productTypesRegistry = $container->getDefinition('ecommerce_catalog.product_types_registry');
+            $productTypesRegistry->addMethodCall('addFiles', array($config['type_files']));
+        }
+
+
         if ($config['persistence']['phpcr']['enabled']) {
             $this->loadPhpcr($config['persistence']['phpcr'], $loader, $container);
 

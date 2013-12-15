@@ -6,10 +6,18 @@
 
     <parameters>
         <parameter key="ecommerce_catalog.product_properties_registry.class">Ecommerce\Bundle\CatalogBundle\Product\Properties\ProductPropertiesRegistry</parameter>
+        <parameter key="ecommerce_catalog.product_types_registry.class">Ecommerce\Bundle\CatalogBundle\Product\Types\ProductTypesRegistry</parameter>
+        <parameter key="ecommerce_catalog.form.type.translatable_field.class">Ecommerce\Bundle\CatalogBundle\Form\Type\TranslatableFieldType</parameter>
     </parameters>
 
     <services>
         <service id="ecommerce_catalog.product_properties_registry" class="%ecommerce_catalog.product_properties_registry.class%">
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
+        <service id="ecommerce_catalog.product_types_registry" class="%ecommerce_catalog.product_types_registry.class%">
             <call method="setContainer">
                 <argument type="service" id="service_container" />
             </call>
@@ -22,5 +30,12 @@
                 <argument type="service" id="service_container" />
             </call>
         </service>
+
+        <service id="ecommerce_catalog.form.type.translatable_field" class="%ecommerce_catalog.form.type.translatable_field.class%">
+            <tag name="form.type" alias="translatable_field" />
+            <argument type="service" id="translator" />
+            <argument>%fallback_locales%</argument>
+        </service>
+
     </services>
 </container>

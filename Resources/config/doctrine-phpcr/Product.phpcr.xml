@@ -27,6 +27,8 @@
 
         <node name="node" />
 
+        <field name="type" type="string" nullable="true" />
+
         <field name="status" type="long" />
 
         <field name="createdAt" type="date" property="jcr:created" />

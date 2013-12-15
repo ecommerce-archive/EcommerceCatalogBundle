@@ -128,7 +128,8 @@ class GroupedForm
             $groupName = 'General';
         }
 
-        $this->formGroups[$groupName][] = $child;
+        $this->formGroups[$groupName][] = $child instanceof FormBuilder ? $child->getName() : $child;
+
 
         return $this;
     }

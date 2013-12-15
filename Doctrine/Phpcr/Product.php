@@ -7,6 +7,7 @@ use Doctrine\ODM\PHPCR\Document\Generic;
 use Jackalope\Node;
 
 use Ecommerce\Bundle\CatalogBundle\Doctrine\Orm\ProductReferenceInterface;
+use PHPCR\PropertyType;
 
 class Product implements ProductInterface
 {
@@ -25,6 +26,11 @@ class Product implements ProductInterface
      * @var Node
      */
     public $node;
+
+    /**
+     * @var string
+     */
+    protected $type;
 
     /**
      * @var ProductReferenceInterface
@@ -139,6 +145,28 @@ class Product implements ProductInterface
         return $this->node;
     }
 
+    /**
+     * @param string $type
+     *
+     * @return Product
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+
+
 
     public function all()
     {
@@ -190,6 +218,31 @@ class Product implements ProductInterface
     }
 
 
+    public function getTranslatedProperties()
+    {
+        $ignoredProperties = array(
+            'jcr:primaryType',
+            'jcr:mixinTypes',
+            'phpcr:class',
+            'phpcr:classparents',
+            'jcr:uuid',
+        );
+
+        $properties = array_diff_key($this->node->getPropertiesValues(), array_flip($ignoredProperties));
+
+        foreach ($properties as $key => $property) {
+            if (is_array($property)
+                && array_key_exists($key.'_locales', $properties)
+                && is_array($propertyLocales = $properties[$key.'_locales'])
+            ) {
+                $properties[$key] = array_combine($propertyLocales, $property);
+                unset($properties[$key.'_locales']);
+            }
+        }
+
+        return $properties;
+    }
+
     public function getTranslatedProperty($name)
     {
         if (!$this->node->hasProperty($name)) {
@@ -225,8 +278,8 @@ class Product implements ProductInterface
             array_values($value)
         );
 
-        $this->node->setProperty($name, $translations);
-        $this->node->setProperty($name.'_locales', array_keys($value));
+        $this->node->setProperty($name, $translations, PropertyType::STRING);
+        $this->node->setProperty($name.'_locales', array_keys($value), PropertyType::STRING);
 
         return true;
     }

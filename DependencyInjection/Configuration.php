@@ -48,6 +48,10 @@ class Configuration implements ConfigurationInterface
                     ->prototype('scalar')->end()
                 ->end()
 
+                ->arrayNode('type_files')
+                    ->prototype('scalar')->end()
+                ->end()
+
                 ->scalarNode('default_template')->end()
 
                 ->enumNode('use_jms_serializer')
